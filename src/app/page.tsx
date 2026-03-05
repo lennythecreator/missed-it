@@ -116,7 +116,7 @@ export default function MissedGoalsApp() {
                     required
                   >
                     <option value="" disabled>Who missed the sitter?</option>
-                    {['Lenny', 'Tobi', 'Oba', 'Charels', 'Sam', 'Mahbad', 'Tikkzy', 'Segun', 'Fortune'].map((name) => (
+                    {['Lenny', 'Tobi', 'Oba', 'Charles', 'Sam', 'Mahbad', 'Tikkzy', 'Segun', 'Fortune'].map((name) => (
                       <option key={name} value={name}>{name}</option>
                     ))}
                   </select>

@@ -55,7 +55,7 @@ export default function MissedGoalsApp() {
       const response = await fetch('/api/missed-goals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user, points, date, link }),
+        body: JSON.stringify({ user, points, date, link: link.trim() || undefined }),
       });
       if (response.ok) {
         setUser('');

@@ -1,9 +1,15 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const rawMongoUri = process.env.MONGODB_URI;
+const MONGODB_URI = rawMongoUri?.trim().replace(/^['"]|['"]$/g, '');
 
 if (!MONGODB_URI) {
   throw new Error('Missing MONGODB_URI. Create a .env at the project root and set MONGODB_URI=...');
+}
+
+if (!MONGODB_URI.startsWith('mongodb://') && !MONGODB_URI.startsWith('mongodb+srv://')) {
+  const masked = MONGODB_URI.replace(/\/\/([^:@/]+):([^@/]+)@/, '//***:***@');
+  throw new Error(`Invalid MONGODB_URI scheme. Expected "mongodb://" or "mongodb+srv://". Got: ${masked}`);
 }
 
 let cached = (global as any).mongoose;

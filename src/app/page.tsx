@@ -1,74 +1,39 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-interface MissedGoal {
-  _id: string;
-  user: string;
-  points: number;
-  date: string;
-  link?: string;
-}
-
-interface LeaderboardEntry {
-  _id: string;
-  totalMissed: number;
-  totalPoints: number;
-}
+import { useMissedGoalsStore } from '@/store/useMissedGoalsStore';
 
 type Tab = 'log' | 'leaderboard' | 'history';
 
 export default function MissedGoalsApp() {
   const [currentTab, setCurrentTab] = useState<Tab>('log');
-  const [missedGoals, setMissedGoals] = useState<MissedGoal[]>([]);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [user, setUser] = useState('');
   const [points, setPoints] = useState(1);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [link, setLink] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const fetchData = async () => {
-    try {
-      const [goalsRes, leaderboardRes] = await Promise.all([
-        fetch('/api/missed-goals'),
-        fetch('/api/leaderboard'),
-      ]);
-      const goalsData = await goalsRes.json();
-      const leaderboardData = await leaderboardRes.json();
-      setMissedGoals(Array.isArray(goalsData) ? goalsData : []);
-      setLeaderboard(Array.isArray(leaderboardData) ? leaderboardData : []);
-    } catch (error) {
-      console.error('Failed to fetch data', error);
-    }
-  };
+  const missedGoals = useMissedGoalsStore((s) => s.missedGoals);
+  const leaderboard = useMissedGoalsStore((s) => s.leaderboard);
+  const loading = useMissedGoalsStore((s) => s.loading);
+  const fetchAll = useMissedGoalsStore((s) => s.fetchAll);
+  const addMissedGoal = useMissedGoalsStore((s) => s.addMissedGoal);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchAll();
+    const interval = setInterval(fetchAll, 10000);
+    return () => clearInterval(interval);
+  }, [fetchAll]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    setLoading(true);
-    try {
-      const response = await fetch('/api/missed-goals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user, points, date, link: link.trim() || undefined }),
-      });
-      if (response.ok) {
-        setUser('');
-        setPoints(1);
-        setDate(new Date().toISOString().split('T')[0]);
-        setLink('');
-        await fetchData();
-        setCurrentTab('history'); // Switch to history after logging
-      }
-    } catch (error) {
-      console.error('Failed to submit goal', error);
-    } finally {
-      setLoading(false);
+    const ok = await addMissedGoal({ user, points, date, link });
+    if (ok) {
+      setUser('');
+      setPoints(1);
+      setDate(new Date().toISOString().split('T')[0]);
+      setLink('');
+      await fetchAll();
+      setCurrentTab('history'); // Switch to history after logging
     }
   };
 

@@ -19,8 +19,18 @@ export default function MissedGoalsApp() {
 
   useEffect(() => {
     fetchAll();
-    const interval = setInterval(fetchAll, 10000);
-    return () => clearInterval(interval);
+    const source = new EventSource('/api/stream');
+    const onUpdate = () => fetchAll();
+    source.addEventListener('missed-goals-updated', onUpdate);
+    source.addEventListener('ready', onUpdate);
+    source.onerror = () => {
+      // Let the browser handle retries. No-op.
+    };
+    return () => {
+      source.removeEventListener('missed-goals-updated', onUpdate);
+      source.removeEventListener('ready', onUpdate);
+      source.close();
+    };
   }, [fetchAll]);
 
   const handleSubmit = async (e: React.FormEvent) => {

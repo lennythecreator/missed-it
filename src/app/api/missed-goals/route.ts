@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import MissedGoal from '@/models/MissedGoal';
+import { publish } from '@/lib/sse';
 
 export async function GET() {
   try {
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
       link,
     });
     await newMissedGoal.save();
+    publish('missed-goals-updated', { id: newMissedGoal._id });
     return NextResponse.json(newMissedGoal, { status: 201 });
   } catch (error) {
     console.error('POST /api/missed-goals failed:', error);

@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme inline {
+  --color-primary: #2f7f34;
+  --color-background-light: #f6f8f6;
+  --color-background-dark: #141e15;
+  --color-referee-yellow: #facc15;
+  --color-pitch-green: #38a169;
+  --color-soccer-yellow: #FFD700;
+  --font-display: "Lexend", sans-serif;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --background: #f6f8f6;
+  --foreground: #0f172a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #141e15;
+    --foreground: #f8fafc;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Lexend", sans-serif;
+  min-height: 100vh;
+}
+
+.football-pitch {
+  background-color: #2f7f34;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  position: relative;
+}
+
+.pitch-line {
+  position: absolute;
+  border: 2px solid rgba(255,255,255,0.3);
+  pointer-events: none;
+}
+
+.turf-gradient {
+  background: linear-gradient(180deg, #1a2e1c 0%, #141e15 100%);
+}
+
+.grass-gradient {
+  background: linear-gradient(180deg, #2f7f34 0%, #26662a 100%);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
